@@ -1,0 +1,133 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<head>
+<link type="text/css" href="/static/css/hot-sneaks/jquery-ui-1.8.18.custom.css" rel="Stylesheet" />	
+<script type="text/javascript" src="/static/js/jquery-1.7.1.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery-ui-1.8.18.custom.min.js"></script>
+<link rel="stylesheet/less" type="text/css" href="/static/less/bootstrap.less">
+<script src="/static/js/less-1.2.2.min.js" type="text/javascript"></script>
+<script type="text/javascript" src="/static/js/bootstrap-modal.js"></script>
+<script>
+	function fixHeight(jQuerySelector) {
+		var heighest = -1, items = jQuerySelector;
+		if (items.length > 0) {
+			items.each(function (index) {
+				$(this).css("height", "auto");
+				heighest = Math.max(heighest, $(this).height());
+			});
+			items.each(function (index) {
+				$(this).height(heighest);
+			});
+		}
+	}
+
+	$(document).ready(function(){
+		$('.row').each(function(){
+			fixHeight($(this).find('.column'));
+		});
+		$('.user_filter').click(function() {
+			var username = $(this)[0].attributes['user'].value;
+			$(".user_filter").each(function() {
+				$(this).removeClass('btn-success');
+			});
+			$(this).addClass('btn-success');
+			$(".user_row").each(function() {
+				if ($(this).hasClass(username)){
+					$(this).show();
+				}
+				else {
+					$(this).hide();
+				}
+			});
+		});
+		$('.tickets').each(function(){$(this).sortable({
+			revert: true
+		})});
+		$('.sticky').each(function(){$(this).draggable({
+			stack: '.tickets',
+			stop: function(event,ui){
+				var tleft=ui.offset.left;
+				var ticket_no = $(this)[0].attributes['ticket_no'].value;
+				$('.status_headers').each(function() {
+					var ileft = $(this).position().left;
+					var iright = ileft + $(this).width()+32;
+					if(ileft<tleft&&tleft<iright){
+						var status_id = $(this)[0].attributes['status_id'].value
+						{% set status_id = status_id %}
+						$.get("/status_update/"+ticket_no+"/"+status_id);
+					}
+				});
+			}
+		});});
+		$('.quick-task').click(function(){
+			$this = $(this);
+			var ticket_no = $(this)[0].attributes['ticket_no'].value;
+			$.get('/modal/'+ticket_no, function(data) {
+				$('#ticketModal').html(data);
+				$('#ticketModal').modal();
+		}	);
+		});
+		$('.sticky').hover(function(){$(this).find('.quick-task').fadeIn(100)},function(){$(this).find('.quick-task').fadeOut(100)});
+	});
+
+</script>
+</head>
+<body>
+	<div class="navbar kaizen-fixed-top">
+	
+	<div class="btn-toolbar">
+		<div class="btn-group">
+</div>
+<div class="btn-group">
+	<a class="btn btn-primary" user="all" href="javascript:void(0)" class="user_filter">all</a>
+{% for user in users %}
+	<a class="btn user_filter" user="{{user.name}}" href="javascript:void(0)" class="user_filter">@{{user.name}}</a>
+{% endfor %}
+	<a class="btn btn-inverse" href="javascript:void(0)">released</a>
+</div>
+</div>
+</div>
+<div id="kaizen">
+	<div class="row header">
+		<div class="span2 column">
+			<span class="logo">改善 Kaizen<span class="version">v0.1</span></span>
+		</div>
+		{% for status in statuses %}
+			<div class="span3 column status_headers" status_id="{{ status.id }}">
+				<h3>{{ status.name }}</h3>
+			</div>
+		{% endfor %}
+	</div>
+{% for user in users %}
+	<div class="row user_row {{user.name}}">
+		<div class="span2 column">
+			<span class="username_column">@{{ user.name }}</span>
+		</div>
+		{% for status in statuses %}
+			<div class="span3 column {{ loop.cycle('odd', 'even') }}">
+				<div class="tickets">
+					{% for ticket in user.ticket_set.filter(status=status) %}
+						<div class="sticky" ticket_no="{{ticket.number}}">
+							<div class="sticky_number">
+							<a target="_blank" href="{{ticket_url_prefix}}{{ticket.number}}">
+								<strong>#{{ticket.number}}</strong>
+							</a>
+						</div>
+					          <a class="quick-task" style="display:none;" ticket_no="{{ticket.number}}" href="javascript:void(0)"><i class="icon-pencil"></i></a></a>
+							<span class="sticky_text">
+									{{ticket.summary}}
+							</span>
+						</div>
+					{% endfor %}
+				</div>
+			</div>
+		{% endfor %}
+	</div>	
+{% endfor %}
+</div>
+
+<div class="modal hide" id="ticketModal">
+</div>
+
+</body>
+</html>

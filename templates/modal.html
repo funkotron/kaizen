@@ -1,0 +1,59 @@
+<script type="text/javascript">
+  /*<![CDATA[*/
+  jQuery(function() {
+      var form = jQuery("#modal_form");
+      form.submit(function(e) {
+          jQuery("#sendbutton").attr('disabled', true)
+          jQuery("#sendwrapper").prepend('<span>Sending message, please wait... </span>')
+          $.post(form.attr('action'), form.serializeArray(), function(data) {
+            if (data=="OK"){
+              $('#ticketModal').modal('hide');
+            }
+            else{
+              $('#ticketModal').html(data);
+            }
+          });
+
+          jQuery("#ajaxwrapper").load(
+              form.attr('action') + ' #ajaxwrapper',
+              form.serializeArray(),
+              function(responseText, responseStatus) {
+                  jQuery("#sendbutton").attr('disabled', false)
+              }
+          );
+          e.preventDefault(); 
+      });
+  });
+  /*]]>*/
+  </script> 
+
+ <div class="modal-header">
+    <a class="close" data-dismiss="modal">×</a>
+    <h4>#{{ticket.number}} {{ticket.summary}}</h4>
+  </div>
+  
+
+<form id="modal_form" class="form-horizontal" action="{% url modal ticket_no=ticket.number %}" method="post">
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  <div class="modal-body">
+   <fieldset>
+    <legend>Change ticket</legend>
+    {% for field in form %}
+<div class="control-group">
+  {{ field.errors|safe }}
+      <label class="control-label" for="{{field.html_name}}">{{ field.label|safe }}</label>
+
+      <div class="controls">
+        {{field|safe}}
+       
+      </div>
+    </div>
+    {% endfor %}    
+     </fieldset>
+
+  </div>
+  <div class="modal-footer">
+    <input type="submit" class="btn btn-primary" value="Save changes" />
+    <a href="#" data-dismiss="modal" class="btn">Close</a>
+  </div>
+  </form>
