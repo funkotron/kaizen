@@ -5,7 +5,8 @@ Install:
 
 * pip install -E requirements.pip
 * Add CodeBase API settings to settings
-* Run server `python2.7 manage.py runserver`
+* Run `./manage.py collectstatic`
+* Run server `./manage.py runserver`
 * Visit `/refresh` to pull tickets from CodeBase
 * Visit `/` to view your new Kaizen board
 
