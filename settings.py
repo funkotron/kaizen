@@ -24,11 +24,11 @@ DATABASES = {
 }
 
 #CODEBASE API SETTINGS
-TICKET_URL_PREFIX = ""
-CODEBASE_TOP_URL = ""
-CODEBASE_ACCOUNT = "" 
+TICKET_URL_PREFIX = "" #This is the URL to visit your ticket e.g. http://code.yourcompany/projects/yourproject/tickets/"
+CODEBASE_TOP_URL = "https://api3.codebasehq.com"
+CODEBASE_ACCOUNT = ""
 CODEBASE_USER = ""
-CODEBASE_PASSWD = ""
+CODEBASE_PASSWD = "" #API KEY
 CODEBASE_PROJECT = ""
 
 # Local time zone for this installation. Choices can be found here:
