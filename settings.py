@@ -30,6 +30,7 @@ CODEBASE_ACCOUNT = ""
 CODEBASE_USER = ""
 CODEBASE_PASSWD = "" #API KEY
 CODEBASE_PROJECT = ""
+STATUS_ORDERING = ['In Progress','Code Complete', 'In Review', 'Approved for release']
 
 # Local time zone for this installation. Choices can be found here:
 # http://en.wikipedia.org/wiki/List_of_tz_zones_by_name

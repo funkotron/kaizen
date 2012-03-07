@@ -13,7 +13,7 @@ def whiteboard(request, *args, **kwargs):
 	context['users'] = User.objects.all()
 	statuses = Status.objects.all()
 	#'New' in ordering makes it very long
-	ordering = ['In Progress','Code Complete', 'In Review', 'Approved for release']
+	ordering = settings.getattr('STATUS_ORDERING')
 	context['statuses'] = [statuses.get(name=ordered_name) for ordered_name in ordering]
 	context['ticket_url_prefix'] = getattr(settings,'TICKET_URL_PREFIX')
 	template = 'whiteboard.html'
